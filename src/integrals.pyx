@@ -732,6 +732,7 @@ def init_guess_by_atom(inp, mol, mf):
             continue
         tmol.basis = mol.basis
         tmol.ecp = mol.ecp
+        tmol.pseudo = mol.pseudo
         tmol.verbose = 0
         tmol.build()
 
