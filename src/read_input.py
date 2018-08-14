@@ -67,7 +67,7 @@ def read_input(filename, build=True):
     reader.add_line_key('maxiter', type=int, default=50) # max SCF iteration
     reader.add_line_key('supcycles', type=int, default=None) # SCF cycles for sup. pDFT
     reader.add_line_key('grid', type=int, default=1)     # Becke grid level
-    reader.add_line_key('pseudo', type=str)              # pseudo potential
+   #reader.add_line_key('pseudo', type=str)              # pseudo potential
     reader.add_line_key('memory', type=(int, float))     # max memory in MB
 
     # line keys with good defaults (shouldn't need to change these)
@@ -94,6 +94,11 @@ def read_input(filename, build=True):
     # electric core potential (ECP)
     ecp = reader.add_block_key('ecp')
     ecp.add_regex_line('atom',
+        '\s*([A-Za-z]+)\s+([A-Za-z0-9]+)', repeat=True)
+    
+    # pseudopotential
+    pseudo = reader.add_block_key('pseudo')
+    pseudo.add_regex_line('atom',
         '\s*([A-Za-z]+)\s+([A-Za-z0-9]+)', repeat=True)
 
     # read the input file
@@ -186,6 +191,17 @@ def read_input(filename, build=True):
         ecp = {}
         for r in inp.ecp.atom:
             ecp.update({r.group(1): r.group(2)})
+
+    #pseudo potentials
+    pseudo = None
+    if inp.pseudo is not None:
+        pseudo = {}
+        for r in inp.pseudo.atom:
+            pseudo.update({r.group(1): r.group(2)})
+
+    if pseudo is not None:
+        cell.pseudo = pseudo
+        fcell.pseudo = pseudo
 
     # initialize HDF5 file using h5py
     if inp.filename[-4:] == '.inp':
@@ -287,8 +303,12 @@ def read_input(filename, build=True):
     else:
         inp.ccell = ccell = inp.cell[0]
 
-    if inp.pseudo is not None:
-        inp.ccell.pseudo = inp.pseudo
+#    if inp.pseudo is not None:
+#        inp.ccell.pseudo = inp.pseudo
+#        inp.ccell.build()
+    # pseudopotential 
+    if pseudo is not None:
+        inp.ccell.pseudo = pseudo
         inp.ccell.build()
 
     # print subsystem coordinates
