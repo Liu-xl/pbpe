@@ -111,6 +111,7 @@ def concatenate_cells(mA, mB, ghost=False):
     mC.dimension  = mA.dimension
     mC.unit       = 'a'
     mC.ecp        = mA.ecp
+    mC.pseudo        = mA.pseudo
     mC.max_memory = mA.max_memory
     mC.build(dump_input=False)
 
